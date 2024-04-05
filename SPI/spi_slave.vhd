@@ -1,27 +1,27 @@
 library IEEE;
-use IEEE.STD_LOGIC_1164.ALL;
-use IEEE.NUMERIC_STD.ALL;
+use IEEE.STD_LOGIC_1164.all;
+use IEEE.NUMERIC_STD.all;
 
 entity spi_slave is
     generic (
         g_data_width : integer := 16
     );
     port (
-        sclk     : in STD_LOGIC;
-        ss_n     : in STD_LOGIC;
-        mosi     : in STD_LOGIC;
-        miso     : out STD_LOGIC;
-        tx_data  : in STD_LOGIC_VECTOR(g_data_width - 1 downto 0);
-        rx_data  : out STD_LOGIC_VECTOR(g_data_width - 1 downto 0);
-        rx_vld   : out STD_LOGIC;
-        rst      : in STD_LOGIC  -- Reset signal
+        sclk    : in std_logic;
+        ss_n    : in std_logic;
+        mosi    : in std_logic;
+        miso    : out std_logic;
+        tx_data : in std_logic_vector(g_data_width - 1 downto 0);
+        rx_data : out std_logic_vector(g_data_width - 1 downto 0);
+        rx_vld  : out std_logic;
+        rst     : in std_logic -- Reset signal
     );
 end spi_slave;
 
 architecture rtl of spi_slave is
-    signal bit_counter   : integer range 0 to g_data_width := 0;
-    signal rx_buffer     : STD_LOGIC_VECTOR(g_data_width - 1 downto 0) := (others => '0');
-    signal tx_buffer     : STD_LOGIC_VECTOR(g_data_width - 1 downto 0) := (others => '0');
+    signal bit_counter : integer range 0 to g_data_width             := 0;
+    signal rx_buffer   : std_logic_vector(g_data_width - 1 downto 0) := (others => '0');
+    signal tx_buffer   : std_logic_vector(g_data_width - 1 downto 0) := (others => '0');
 begin
     -- Bit counter process
     bit_cnt_proc : process (rst, ss_n, sclk)
@@ -45,7 +45,7 @@ begin
             rx_buffer <= (others => '0');
             rx_vld    <= '0';
         elsif rising_edge(sclk) then
-            if bit_counter <= g_data_width then
+            if bit_counter                        <= g_data_width then
                 rx_buffer(g_data_width - bit_counter) <= mosi;
                 if bit_counter = g_data_width then
                     rx_vld <= '1';
@@ -65,7 +65,7 @@ begin
             miso <= 'Z';
         elsif falling_edge(sclk) then
             if bit_counter <= g_data_width then
-                miso <= tx_buffer(g_data_width - 1 - bit_counter);
+                miso           <= tx_buffer(g_data_width - 1 - bit_counter);
             end if;
         end if;
     end process;
